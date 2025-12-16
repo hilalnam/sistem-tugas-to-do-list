@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Database Service
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      JWT_SECRET: supersecretkey123
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+
+  # Todo/Main Service
+  todo-service:
+    build: ./todo-service
+    container_name: todo_service
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      JWT_SECRET: supersecretkey123
+    ports:
+      - "3002:3002"
+    networks:
+      - app-network
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+
+  # Gateway & Frontend
+  gateway:
+    build: ./frontend
+    container_name: gateway_service
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+    depends_on:
+      - auth-service
+      - todo-service
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

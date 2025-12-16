@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin & Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0f172a; --bg-card: #1e293b; --text-main: #f1f5f9; --text-muted: #94a3b8;
+            --primary: #3b82f6; --primary-hover: #2563eb; --danger: #ef4444; --success: #10b981;
+            --warning: #f59e0b; --input-bg: #334155; --border: #475569;
+        }
+        body { font-family: 'Poppins', sans-serif; max-width: 1100px; margin: 20px auto; background-color: var(--bg-body); color: var(--text-main); padding: 20px; }
+        .hidden { display: none; }
+        .box { background: var(--bg-card); padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 25px; border: 1px solid var(--border); }
+        h2, h3 { margin-top: 0; color: var(--text-main); font-weight: 600; }
+        input, select { padding: 14px; margin: 8px 0; width: 100%; border-radius: 8px; border: 1px solid var(--border); background-color: var(--input-bg); color: white; font-family: 'Poppins', sans-serif; box-sizing: border-box;}
+        button { padding: 14px; margin-top: 5px; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-family: 'Poppins', sans-serif; transition: 0.3s; font-size: 14px; }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        button.delete-btn { background-color: var(--danger); width: auto; padding: 8px 15px; margin-left: 5px;}
+        button.edit-btn { background-color: var(--success); width: auto; padding: 8px 15px; }
+        .toggle-link { text-align: center; margin-top: 20px; font-size: 14px; cursor: pointer; color: var(--primary); text-decoration: none; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; }
+        th, td { border-bottom: 1px solid var(--border); padding: 16px; text-align: left; }
+        th { background-color: #0f172a; color: var(--text-muted); font-weight: 500; text-transform: uppercase; font-size: 12px; }
+        .badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; color: white; font-weight: 500; }
+        .badge-admin { background-color: #8b5cf6; } .badge-user { background-color: #10b981; }
+        .progress-badge { padding: 6px 12px; border-radius: 50px; font-size: 12px; font-weight: 500; background-color: rgba(255,255,255,0.1); border: 1px solid var(--border); }
+        .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div id="auth-section" class="box" style="max-width: 400px; margin: 80px auto;">
+        <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">Selamat Datang</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="auth-btn" onclick="handleAuth()" style="margin-top: 20px;">Masuk Aplikasi</button>
+        <p id="auth-msg" style="color: var(--danger); text-align: center; margin-top: 15px; font-size: 14px;"></p>
+        <p class="toggle-link" onclick="toggleAuthMode()">Belum punya akun? Daftar di sini</p>
+    </div>
+
+    <div id="dashboard-section" class="hidden">
+        <div class="header-flex">
+            <div>
+                <h2 style="margin-bottom: 5px;">Dashboard Sistem</h2>
+                <span id="user-role-badge" class="badge"></span>
+            </div>
+            <div>
+                <button onclick="logout()" style="width: auto; background-color: var(--border);">Logout</button>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="box hidden">
+            <h3 style="color: #a78bfa;">👥 Daftar Semua Pengguna</h3>
+            <table>
+                <thead><tr><th>ID</th><th>Username</th><th>Role</th></tr></thead>
+                <tbody id="user-list"></tbody>
+            </table>
+        </div>
+
+        <div class="box">
+            <h3>➕ Tambah Tugas Baru</h3>
+            <div class="grid-3">
+                <input type="text" id="title" placeholder="Judul Tugas">
+                <input type="text" id="category" placeholder="Kategori">
+                <input type="date" id="deadline">
+            </div>
+            <button onclick="addTask()" style="margin-top: 15px; width: auto; padding-left: 30px; padding-right: 30px;">Simpan Tugas</button>
+        </div>
+
+        <div class="box">
+            <h3 id="table-title">📊 Daftar Progres (Semua User)</h3> 
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pemilik Tugas</th><th>Judul Tugas</th><th>Kategori</th>
+                        <th>Deadline</th><th>Progres</th><th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_URL = '/auth'; 
+        const TODO_URL = '/todos';
+        
+        let isRegisterMode = false;
+        let userMap = {}; 
+
+        const token = localStorage.getItem('token');
+        if (token) showDashboard();
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? "Buat Akun Baru" : "Selamat Datang";
+            document.getElementById('auth-btn').innerText = isRegisterMode ? "Daftar Sekarang" : "Masuk Aplikasi";
+        }
+
+        async function handleAuth() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const endpoint = isRegisterMode ? '/register' : '/login';
+            const payload = isRegisterMode ? { username, password, role: 'user' } : { username, password };
+
+            try {
+                const res = await fetch(AUTH_URL + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (isRegisterMode) {
+                        alert("Registrasi Berhasil! Silakan Login.");
+                        toggleAuthMode();
+                    } else {
+                        localStorage.setItem('token', data.token);
+                        const user = JSON.parse(atob(data.token.split('.')[1]));
+                        localStorage.setItem('role', user.role);
+                        localStorage.setItem('username', user.username);
+                        localStorage.setItem('user_id', user.id); 
+                        showDashboard();
+                    }
+                } else {
+                    document.getElementById('auth-msg').innerText = data.message;
+                }
+            } catch (err) { alert("Koneksi Error"); }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+
+        async function showDashboard() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            
+            const role = localStorage.getItem('role');
+            const username = localStorage.getItem('username');
+            
+            document.getElementById('user-role-badge').innerText = `${username} (${role.toUpperCase()})`;
+            document.getElementById('user-role-badge').className = `badge ${role === 'admin' ? 'badge-admin' : 'badge-user'}`;
+
+            if (role === 'admin') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+            }
+            
+            await loadUsers();
+            loadTasks();
+        }
+
+        async function loadUsers() {
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`${AUTH_URL}/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const users = await res.json();
+                const tbody = document.getElementById('user-list');
+                tbody.innerHTML = '';
+                users.forEach(u => {
+                    tbody.innerHTML += `<tr><td>${u.id}</td><td style="font-weight:600; color: #f1f5f9;">${u.username}</td><td><span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role}</span></td></tr>`;
+                    userMap[u.id] = u.username;
+                });
+            } catch (e) { }
+        }
+
+        async function loadTasks() {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            let myId = localStorage.getItem('user_id'); // ID sudah aman diambil di sini
+            
+            const res = await fetch(TODO_URL, { headers: { 'Authorization': `Bearer ${token}` } });
+            const tasks = await res.json();
+            const tbody = document.getElementById('task-list');
+            tbody.innerHTML = '';
+            
+            tasks.forEach(t => {
+                const deadline = new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                
+                let ownerName = userMap[t.user_id] || `User #${t.user_id}`;
+                if (t.user_id == myId) ownerName += " (Anda)";
+
+                let actionButtons = '';
+                
+                if (role === 'admin' || t.user_id == myId) {
+                    actionButtons = `
+                        <button class="edit-btn" onclick="updateProgress(${t.id}, '${t.status}')">✏️</button>
+                        <button class="delete-btn" onclick="deleteTask(${t.id})">🗑️</button>
+                    `;
+                } else {
+                    actionButtons = `<span style="font-size:12px; color: var(--text-muted); font-style: italic;">Hanya Lihat</span>`;
+                }
+
+                const row = `<tr>
+                    <td style="color: var(--primary); font-weight: 600;">${ownerName}</td>
+                    <td style="font-weight: 500;">${t.title}</td><td>${t.category}</td><td>${deadline}</td>
+                    <td><span class="progress-badge">${t.status}</span></td>
+                    <td>${actionButtons}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        async function addTask() {
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const deadline = document.getElementById('deadline').value;
+            const token = localStorage.getItem('token');
+            if(!title) return;
+            await fetch(TODO_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ title, category, deadline })
+            });
+            loadTasks();
+            document.getElementById('title').value = '';
+        }
+
+        async function updateProgress(id, current) {
+            const newVal = prompt("Update status (Pending/Done/On Progress):", current);
+            if (!newVal) return;
+            const token = localStorage.getItem('token');
+            await fetch(`${TODO_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ progress: newVal }) 
+            });
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            if(!confirm("Yakin hapus tugas ini?")) return;
+            const token = localStorage.getItem('token');
+            await fetch(`${TODO_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadTasks();
+        }
+    </script>
+</body>
+</html>
