@@ -1,4 +1,4 @@
-# UAS Microservices - Sistem Manajemen Tugas (To-Do List)
+Sistem Manajemen Tugas (To-Do List)
 
 Proyek ini adalah implementasi arsitektur **Microservices** untuk aplikasi manajemen tugas. Aplikasi dibangun menggunakan Node.js, Express, MySQL, dan dikemas menggunakan Docker.
 
