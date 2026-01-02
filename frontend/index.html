@@ -1,241 +1,694 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin & Monitoring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-body: #0f172a; --bg-card: #1e293b; --text-main: #f1f5f9; --text-muted: #94a3b8;
-            --primary: #3b82f6; --primary-hover: #2563eb; --danger: #ef4444; --success: #10b981;
-            --warning: #f59e0b; --input-bg: #334155; --border: #475569;
-        }
-        body { font-family: 'Poppins', sans-serif; max-width: 1100px; margin: 20px auto; background-color: var(--bg-body); color: var(--text-main); padding: 20px; }
-        .hidden { display: none; }
-        .box { background: var(--bg-card); padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 25px; border: 1px solid var(--border); }
-        h2, h3 { margin-top: 0; color: var(--text-main); font-weight: 600; }
-        input, select { padding: 14px; margin: 8px 0; width: 100%; border-radius: 8px; border: 1px solid var(--border); background-color: var(--input-bg); color: white; font-family: 'Poppins', sans-serif; box-sizing: border-box;}
-        button { padding: 14px; margin-top: 5px; width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-family: 'Poppins', sans-serif; transition: 0.3s; font-size: 14px; }
-        button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
-        button.delete-btn { background-color: var(--danger); width: auto; padding: 8px 15px; margin-left: 5px;}
-        button.edit-btn { background-color: var(--success); width: auto; padding: 8px 15px; }
-        .toggle-link { text-align: center; margin-top: 20px; font-size: 14px; cursor: pointer; color: var(--primary); text-decoration: none; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; }
-        th, td { border-bottom: 1px solid var(--border); padding: 16px; text-align: left; }
-        th { background-color: #0f172a; color: var(--text-muted); font-weight: 500; text-transform: uppercase; font-size: 12px; }
-        .badge { padding: 6px 14px; border-radius: 50px; font-size: 12px; color: white; font-weight: 500; }
-        .badge-admin { background-color: #8b5cf6; } .badge-user { background-color: #10b981; }
-        .progress-badge { padding: 6px 12px; border-radius: 50px; font-size: 12px; font-weight: 500; background-color: rgba(255,255,255,0.1); border: 1px solid var(--border); }
-        .grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Telkom University • Dashboard Monitoring</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Telkom University-ish theme (red + dark modern) */
+      --bg: #070A12;
+      --bg2:#0b1020;
+      --card:#0f172a;
+      --card2:#101c36;
+      --text:#f8fafc;
+      --muted:#9aa7bf;
+      --border: rgba(255,255,255,.12);
+
+      --brand:#E11D2E;        /* Telkom red */
+      --brand2:#ff4d5e;
+      --brandHover:#c81422;
+
+      --primary:#E11D2E;
+      --primaryHover:#c81422;
+      --success:#22c55e;
+      --danger:#ef4444;
+      --warning:#f59e0b;
+
+      --input:#0b1630;
+      --glow: 0 0 0 6px rgba(225,29,46,.12);
+      --shadow: 0 18px 45px rgba(0,0,0,.55);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      font-family:'Poppins',sans-serif;
+      margin:0;
+      background:
+        radial-gradient(900px 450px at 15% -10%, rgba(225,29,46,.22), transparent 60%),
+        radial-gradient(900px 450px at 85% 0%, rgba(255,77,94,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .container{
+      max-width: 1150px;
+      margin: 22px auto;
+      padding: 18px;
+    }
+
+    .hidden{ display:none; }
+
+    /* Top brand bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding: 16px 18px;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(15,23,42,.9), rgba(15,23,42,.75));
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 14px;
+      z-index: 5;
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 260px;
+    }
+    .brand-badge{
+      width:42px; height:42px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 30%, var(--brand2), var(--brand));
+      display:grid;
+      place-items:center;
+      box-shadow: 0 14px 35px rgba(225,29,46,.35);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .brand-badge svg{ width:22px; height:22px; }
+    .brand h1{
+      font-size: 15px;
+      margin:0;
+      line-height:1.2;
+      letter-spacing:.2px;
+    }
+    .brand span{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top:2px;
+    }
+
+    .right-tools{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    /* Cards */
+    .box{
+      margin-top: 18px;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(15,23,42,.95), rgba(15,23,42,.78));
+      box-shadow: var(--shadow);
+      padding: 22px;
+      position: relative;
+      overflow:hidden;
+    }
+    .box::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(600px 120px at 20% 0%, rgba(225,29,46,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .box > *{ position:relative; z-index:1; }
+
+    .title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+    }
+    h2,h3{
+      margin:0;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    h2{ font-size: 18px; }
+    h3{ font-size: 16px; }
+
+    .subtitle{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* Auth box */
+    .auth-wrap{
+      max-width: 420px;
+      margin: 70px auto;
+    }
+
+    /* Inputs */
+    input, select{
+      width:100%;
+      padding: 13px 14px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(11,22,48,.92), rgba(11,22,48,.72));
+      color: var(--text);
+      outline:none;
+      transition:.2s;
+    }
+    input:focus, select:focus{
+      border-color: rgba(225,29,46,.7);
+      box-shadow: var(--glow);
+    }
+    input::placeholder{ color: rgba(154,167,191,.8); }
+
+    /* Buttons */
+    button{
+      padding: 12px 14px;
+      border:none;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+      font-family:'Poppins',sans-serif;
+      transition: .2s;
+      color:white;
+      background: linear-gradient(180deg, var(--primary), var(--primaryHover));
+      box-shadow: 0 14px 35px rgba(225,29,46,.28);
+    }
+    button:hover{ transform: translateY(-2px); filter: brightness(1.02); }
+    button:active{ transform: translateY(0px); }
+
+    .btn-ghost{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      box-shadow:none;
+      color: var(--text);
+    }
+    .btn-ghost:hover{ background: rgba(255,255,255,.09); }
+
+    .btn-sm{
+      padding: 8px 12px;
+      border-radius: 12px;
+      width:auto;
+      box-shadow:none;
+      font-weight:700;
+    }
+    .edit-btn{ background: linear-gradient(180deg, #22c55e, #16a34a); }
+    .delete-btn{ background: linear-gradient(180deg, #ef4444, #dc2626); }
+
+    .toggle-link{
+      text-align:center;
+      margin-top: 14px;
+      font-size: 13px;
+      cursor:pointer;
+      color: rgba(255,255,255,.85);
+    }
+    .toggle-link a{
+      color: var(--brand2);
+      text-decoration:none;
+      font-weight:700;
+    }
+
+    /* Role badge */
+    .badge{
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    .badge-admin{
+      background: rgba(168,85,247,.18);
+      border-color: rgba(168,85,247,.35);
+      color:#e9d5ff;
+    }
+    .badge-user{
+      background: rgba(34,197,94,.16);
+      border-color: rgba(34,197,94,.35);
+      color:#bbf7d0;
+    }
+
+    /* Stats strip */
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .stat{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 14px;
+      background: linear-gradient(180deg, rgba(16,28,54,.85), rgba(15,23,42,.62));
+    }
+    .stat .k{ color: var(--muted); font-size: 12px; }
+    .stat .v{ font-size: 20px; font-weight: 800; margin-top: 6px; letter-spacing:.3px; }
+    .stat .hint{ margin-top: 6px; font-size: 11px; color: rgba(154,167,191,.85); }
+
+    /* Layout helpers */
+    .grid-3{
+      display:grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .grid-3{ grid-template-columns: 1fr; }
+      .stats{ grid-template-columns: 1fr; }
+      .brand{ min-width: unset; }
+    }
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      margin-top: 12px;
+    }
+    thead th{
+      text-align:left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      color: rgba(154,167,191,.95);
+      padding: 10px 14px;
+    }
+    tbody tr{
+      background: linear-gradient(180deg, rgba(16,28,54,.85), rgba(15,23,42,.6));
+      border:1px solid var(--border);
+    }
+    tbody td{
+      padding: 14px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    tbody tr td:first-child{
+      border-left: 1px solid rgba(255,255,255,.06);
+      border-top-left-radius: 14px;
+      border-bottom-left-radius: 14px;
+    }
+    tbody tr td:last-child{
+      border-right: 1px solid rgba(255,255,255,.06);
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+    .progress-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: rgba(255,255,255,.5);
+    }
+    .dot.pending{ background: var(--warning); }
+    .dot.done{ background: var(--success); }
+    .dot.progress{ background: #60a5fa; }
+
+    .muted{
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .danger-text{ color: var(--danger); }
+
+    /* Small utility */
+    .inline{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="auth-section" class="box" style="max-width: 400px; margin: 80px auto;">
-        <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">Selamat Datang</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button id="auth-btn" onclick="handleAuth()" style="margin-top: 20px;">Masuk Aplikasi</button>
-        <p id="auth-msg" style="color: var(--danger); text-align: center; margin-top: 15px; font-size: 14px;"></p>
-        <p class="toggle-link" onclick="toggleAuthMode()">Belum punya akun? Daftar di sini</p>
+  <div class="container">
+
+    <!-- AUTH -->
+    <div id="auth-section" class="box auth-wrap">
+      <div class="title-row">
+        <div>
+          <h2 id="auth-title">Telkom University • Sistem Tugas</h2>
+          <div class="subtitle">Login untuk monitoring progres & manajemen tugas.</div>
+        </div>
+      </div>
+
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button id="auth-btn" onclick="handleAuth()" style="margin-top: 10px;">Masuk Aplikasi</button>
+
+      <p id="auth-msg" class="danger-text" style="text-align:center; margin-top: 12px; font-size: 13px;"></p>
+
+      <div class="toggle-link" onclick="toggleAuthMode()">
+        <span>Belum punya akun?</span> <a href="javascript:void(0)">Daftar di sini</a>
+      </div>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="dashboard-section" class="hidden">
-        <div class="header-flex">
-            <div>
-                <h2 style="margin-bottom: 5px;">Dashboard Sistem</h2>
-                <span id="user-role-badge" class="badge"></span>
-            </div>
-            <div>
-                <button onclick="logout()" style="width: auto; background-color: var(--border);">Logout</button>
-            </div>
+
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-badge" aria-hidden="true">
+            <!-- Simple "T" emblem -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 6h12M12 6v12" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M8.5 10h7" stroke="white" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Telkom University • Dashboard Monitoring</h1>
+            <span>Admin & User • To-Do Management System</span>
+          </div>
         </div>
 
-        <div id="admin-panel" class="box hidden">
-            <h3 style="color: #a78bfa;">👥 Daftar Semua Pengguna</h3>
-            <table>
-                <thead><tr><th>ID</th><th>Username</th><th>Role</th></tr></thead>
-                <tbody id="user-list"></tbody>
-            </table>
+        <div class="right-tools">
+          <span id="user-role-badge" class="badge"></span>
+          <button class="btn-ghost btn-sm" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- Mini Stats -->
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Total Tugas</div>
+          <div class="v" id="stat-total">0</div>
+          <div class="hint">Semua tugas yang terdata</div>
+        </div>
+        <div class="stat">
+          <div class="k">On Progress</div>
+          <div class="v" id="stat-progress">0</div>
+          <div class="hint">Sedang dikerjakan</div>
+        </div>
+        <div class="stat">
+          <div class="k">Done</div>
+          <div class="v" id="stat-done">0</div>
+          <div class="hint">Selesai</div>
+        </div>
+      </div>
+
+      <!-- Admin Panel -->
+      <div id="admin-panel" class="box hidden">
+        <div class="title-row">
+          <div>
+            <h3 style="color: #ffb4bc;">👥 Daftar Semua Pengguna</h3>
+            <div class="subtitle">Khusus admin untuk melihat user terdaftar.</div>
+          </div>
         </div>
 
-        <div class="box">
+        <table>
+          <thead><tr><th>ID</th><th>Username</th><th>Role</th></tr></thead>
+          <tbody id="user-list"></tbody>
+        </table>
+      </div>
+
+      <!-- Add Task -->
+      <div class="box">
+        <div class="title-row">
+          <div>
             <h3>➕ Tambah Tugas Baru</h3>
-            <div class="grid-3">
-                <input type="text" id="title" placeholder="Judul Tugas">
-                <input type="text" id="category" placeholder="Kategori">
-                <input type="date" id="deadline">
-            </div>
-            <button onclick="addTask()" style="margin-top: 15px; width: auto; padding-left: 30px; padding-right: 30px;">Simpan Tugas</button>
+            <div class="subtitle">Buat tugas dan atur deadline untuk monitoring progres.</div>
+          </div>
         </div>
 
-        <div class="box">
-            <h3 id="table-title">📊 Daftar Progres (Semua User)</h3> 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pemilik Tugas</th><th>Judul Tugas</th><th>Kategori</th>
-                        <th>Deadline</th><th>Progres</th><th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="task-list"></tbody>
-            </table>
+        <div class="grid-3">
+          <input type="text" id="title" placeholder="Judul Tugas">
+          <input type="text" id="category" placeholder="Kategori (contoh: Kuliah/Proyek)">
+          <input type="date" id="deadline">
         </div>
+
+        <div class="inline" style="margin-top: 12px;">
+          <button class="btn-sm" onclick="addTask()">Simpan Tugas</button>
+          <span class="muted">Tip: isi judul dulu minimal ya.</span>
+        </div>
+      </div>
+
+      <!-- Task Table -->
+      <div class="box">
+        <div class="title-row">
+          <div>
+            <h3 id="table-title">📊 Daftar Progres (Semua User)</h3>
+            <div class="subtitle">Admin bisa edit/hapus semua. User hanya punya akses pada tugas sendiri.</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Pemilik Tugas</th>
+            <th>Judul Tugas</th>
+            <th>Kategori</th>
+            <th>Deadline</th>
+            <th>Progres</th>
+            <th>Aksi</th>
+          </tr>
+          </thead>
+          <tbody id="task-list"></tbody>
+        </table>
+      </div>
+
     </div>
+  </div>
 
-    <script>
-        const AUTH_URL = '/auth'; 
-        const TODO_URL = '/todos';
-        
-        let isRegisterMode = false;
-        let userMap = {}; 
+  <script>
+    const AUTH_URL = '/auth';
+    const TODO_URL = '/todos';
 
-        const token = localStorage.getItem('token');
-        if (token) showDashboard();
+    let isRegisterMode = false;
+    let userMap = {};
 
-        function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('auth-title').innerText = isRegisterMode ? "Buat Akun Baru" : "Selamat Datang";
-            document.getElementById('auth-btn').innerText = isRegisterMode ? "Daftar Sekarang" : "Masuk Aplikasi";
+    const token = localStorage.getItem('token');
+    if (token) showDashboard();
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('auth-title').innerText = isRegisterMode
+        ? "Daftar Akun • Telkom University"
+        : "Telkom University • Sistem Tugas";
+      document.getElementById('auth-btn').innerText = isRegisterMode
+        ? "Daftar Sekarang"
+        : "Masuk Aplikasi";
+
+      // Clear error msg
+      document.getElementById('auth-msg').innerText = "";
+    }
+
+    async function handleAuth() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const endpoint = isRegisterMode ? '/register' : '/login';
+      const payload = isRegisterMode
+        ? { username, password, role: 'user' }
+        : { username, password };
+
+      try {
+        const res = await fetch(AUTH_URL + endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          if (isRegisterMode) {
+            alert("Registrasi Berhasil! Silakan Login.");
+            toggleAuthMode();
+          } else {
+            localStorage.setItem('token', data.token);
+            const user = JSON.parse(atob(data.token.split('.')[1]));
+            localStorage.setItem('role', user.role);
+            localStorage.setItem('username', user.username);
+            localStorage.setItem('user_id', user.id);
+            showDashboard();
+          }
+        } else {
+          document.getElementById('auth-msg').innerText = data.message || "Gagal autentikasi.";
+        }
+      } catch (err) {
+        alert("Koneksi Error");
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    async function showDashboard() {
+      document.getElementById('auth-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+
+      const role = localStorage.getItem('role');
+      const username = localStorage.getItem('username');
+
+      const badge = document.getElementById('user-role-badge');
+      badge.innerText = `${username} (${role.toUpperCase()})`;
+      badge.className = `badge ${role === 'admin' ? 'badge-admin' : 'badge-user'}`;
+
+      if (role === 'admin') {
+        document.getElementById('admin-panel').classList.remove('hidden');
+      }
+
+      await loadUsers();
+      await loadTasks();
+    }
+
+    async function loadUsers() {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`${AUTH_URL}/users`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const users = await res.json();
+        const tbody = document.getElementById('user-list');
+        tbody.innerHTML = '';
+
+        users.forEach(u => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${u.id}</td>
+              <td style="font-weight:700;">${u.username}</td>
+              <td>
+                <span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role}</span>
+              </td>
+            </tr>`;
+          userMap[u.id] = u.username;
+        });
+      } catch (e) { /* ignore */ }
+    }
+
+    function statusDotClass(status){
+      const s = (status || "").toLowerCase();
+      if (s.includes("done")) return "done";
+      if (s.includes("progress")) return "progress";
+      return "pending";
+    }
+
+    async function loadTasks() {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+      let myId = localStorage.getItem('user_id');
+
+      const res = await fetch(TODO_URL, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const tasks = await res.json();
+
+      const tbody = document.getElementById('task-list');
+      tbody.innerHTML = '';
+
+      // Stats
+      const total = tasks.length;
+      const done = tasks.filter(t => (t.status || "").toLowerCase().includes("done")).length;
+      const onprog = tasks.filter(t => (t.status || "").toLowerCase().includes("progress")).length;
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-done').innerText = done;
+      document.getElementById('stat-progress').innerText = onprog;
+
+      tasks.forEach(t => {
+        const deadline = t.deadline
+          ? new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+          : "-";
+
+        let ownerName = userMap[t.user_id] || `User #${t.user_id}`;
+        if (t.user_id == myId) ownerName += " (Anda)";
+
+        let actionButtons = '';
+        if (role === 'admin' || t.user_id == myId) {
+          actionButtons = `
+            <button class="btn-sm edit-btn" onclick="updateProgress(${t.id}, '${t.status || 'Pending'}')">✏️</button>
+            <button class="btn-sm delete-btn" onclick="deleteTask(${t.id})">🗑️</button>
+          `;
+        } else {
+          actionButtons = `<span class="muted">Hanya Lihat</span>`;
         }
 
-        async function handleAuth() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const endpoint = isRegisterMode ? '/register' : '/login';
-            const payload = isRegisterMode ? { username, password, role: 'user' } : { username, password };
+        const row = `
+          <tr>
+            <td style="color: rgba(255,77,94,.95); font-weight: 800;">${ownerName}</td>
+            <td style="font-weight: 600;">${t.title}</td>
+            <td style="color: rgba(248,250,252,.85);">${t.category || '-'}</td>
+            <td>${deadline}</td>
+            <td>
+              <span class="progress-badge">
+                <span class="dot ${statusDotClass(t.status)}"></span>
+                ${t.status || 'Pending'}
+              </span>
+            </td>
+            <td class="inline">${actionButtons}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
 
-            try {
-                const res = await fetch(AUTH_URL + endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
+    async function addTask() {
+      const title = document.getElementById('title').value;
+      const category = document.getElementById('category').value;
+      const deadline = document.getElementById('deadline').value;
+      const token = localStorage.getItem('token');
 
-                if (res.ok) {
-                    if (isRegisterMode) {
-                        alert("Registrasi Berhasil! Silakan Login.");
-                        toggleAuthMode();
-                    } else {
-                        localStorage.setItem('token', data.token);
-                        const user = JSON.parse(atob(data.token.split('.')[1]));
-                        localStorage.setItem('role', user.role);
-                        localStorage.setItem('username', user.username);
-                        localStorage.setItem('user_id', user.id); 
-                        showDashboard();
-                    }
-                } else {
-                    document.getElementById('auth-msg').innerText = data.message;
-                }
-            } catch (err) { alert("Koneksi Error"); }
-        }
+      if(!title) return;
 
-        function logout() { localStorage.clear(); location.reload(); }
+      await fetch(TODO_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ title, category, deadline })
+      });
 
-        async function showDashboard() {
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-            
-            const role = localStorage.getItem('role');
-            const username = localStorage.getItem('username');
-            
-            document.getElementById('user-role-badge').innerText = `${username} (${role.toUpperCase()})`;
-            document.getElementById('user-role-badge').className = `badge ${role === 'admin' ? 'badge-admin' : 'badge-user'}`;
+      await loadTasks();
+      document.getElementById('title').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('deadline').value = '';
+    }
 
-            if (role === 'admin') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-            }
-            
-            await loadUsers();
-            loadTasks();
-        }
+    async function updateProgress(id, current) {
+      const newVal = prompt("Update status (Pending/Done/On Progress):", current);
+      if (!newVal) return;
+      const token = localStorage.getItem('token');
 
-        async function loadUsers() {
-            const token = localStorage.getItem('token');
-            try {
-                const res = await fetch(`${AUTH_URL}/users`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const users = await res.json();
-                const tbody = document.getElementById('user-list');
-                tbody.innerHTML = '';
-                users.forEach(u => {
-                    tbody.innerHTML += `<tr><td>${u.id}</td><td style="font-weight:600; color: #f1f5f9;">${u.username}</td><td><span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role}</span></td></tr>`;
-                    userMap[u.id] = u.username;
-                });
-            } catch (e) { }
-        }
+      await fetch(`${TODO_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ progress: newVal })
+      });
 
-        async function loadTasks() {
-            const token = localStorage.getItem('token');
-            const role = localStorage.getItem('role');
-            let myId = localStorage.getItem('user_id'); // ID sudah aman diambil di sini
-            
-            const res = await fetch(TODO_URL, { headers: { 'Authorization': `Bearer ${token}` } });
-            const tasks = await res.json();
-            const tbody = document.getElementById('task-list');
-            tbody.innerHTML = '';
-            
-            tasks.forEach(t => {
-                const deadline = new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-                
-                let ownerName = userMap[t.user_id] || `User #${t.user_id}`;
-                if (t.user_id == myId) ownerName += " (Anda)";
+      await loadTasks();
+    }
 
-                let actionButtons = '';
-                
-                if (role === 'admin' || t.user_id == myId) {
-                    actionButtons = `
-                        <button class="edit-btn" onclick="updateProgress(${t.id}, '${t.status}')">✏️</button>
-                        <button class="delete-btn" onclick="deleteTask(${t.id})">🗑️</button>
-                    `;
-                } else {
-                    actionButtons = `<span style="font-size:12px; color: var(--text-muted); font-style: italic;">Hanya Lihat</span>`;
-                }
+    async function deleteTask(id) {
+      if(!confirm("Yakin hapus tugas ini?")) return;
+      const token = localStorage.getItem('token');
 
-                const row = `<tr>
-                    <td style="color: var(--primary); font-weight: 600;">${ownerName}</td>
-                    <td style="font-weight: 500;">${t.title}</td><td>${t.category}</td><td>${deadline}</td>
-                    <td><span class="progress-badge">${t.status}</span></td>
-                    <td>${actionButtons}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
-        }
+      await fetch(`${TODO_URL}/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
 
-        async function addTask() {
-            const title = document.getElementById('title').value;
-            const category = document.getElementById('category').value;
-            const deadline = document.getElementById('deadline').value;
-            const token = localStorage.getItem('token');
-            if(!title) return;
-            await fetch(TODO_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ title, category, deadline })
-            });
-            loadTasks();
-            document.getElementById('title').value = '';
-        }
-
-        async function updateProgress(id, current) {
-            const newVal = prompt("Update status (Pending/Done/On Progress):", current);
-            if (!newVal) return;
-            const token = localStorage.getItem('token');
-            await fetch(`${TODO_URL}/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ progress: newVal }) 
-            });
-            loadTasks();
-        }
-
-        async function deleteTask(id) {
-            if(!confirm("Yakin hapus tugas ini?")) return;
-            const token = localStorage.getItem('token');
-            await fetch(`${TODO_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-            loadTasks();
-        }
-    </script>
+      await loadTasks();
+    }
+  </script>
 </body>
 </html>
