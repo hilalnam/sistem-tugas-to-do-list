@@ -9,16 +9,13 @@
 
   <style>
     :root{
-      /* Telkom University-ish theme (red + dark modern) */
       --bg: #070A12;
       --bg2:#0b1020;
-      --card:#0f172a;
-      --card2:#101c36;
       --text:#f8fafc;
       --muted:#9aa7bf;
       --border: rgba(255,255,255,.12);
 
-      --brand:#E11D2E;        /* Telkom red */
+      --brand:#E11D2E;        /* Telkom-ish red */
       --brand2:#ff4d5e;
       --brandHover:#c81422;
 
@@ -26,7 +23,6 @@
       --primaryHover:#c81422;
       --success:#22c55e;
       --danger:#ef4444;
-      --warning:#f59e0b;
 
       --input:#0b1630;
       --glow: 0 0 0 6px rgba(225,29,46,.12);
@@ -38,23 +34,38 @@
     body{
       font-family:'Poppins',sans-serif;
       margin:0;
+      color:var(--text);
+      min-height:100vh;
       background:
         radial-gradient(900px 450px at 15% -10%, rgba(225,29,46,.22), transparent 60%),
         radial-gradient(900px 450px at 85% 0%, rgba(255,77,94,.14), transparent 55%),
         linear-gradient(180deg, var(--bg), var(--bg2));
-      color:var(--text);
-      min-height:100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(700px 400px at 50% 0%, rgba(0,0,0,.9), transparent 70%);
+      opacity: .35;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container{
       max-width: 1150px;
       margin: 22px auto;
       padding: 18px;
+      position: relative;
+      z-index: 1;
     }
-
     .hidden{ display:none; }
 
-    /* Top brand bar */
     .topbar{
       display:flex;
       align-items:center;
@@ -74,10 +85,19 @@
       display:flex;
       align-items:center;
       gap:12px;
-      min-width: 260px;
+      min-width: 280px;
+    }
+    #telu-logo{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 14px 35px rgba(225,29,46,.20);
+      background: rgba(255,255,255,.06);
     }
     .brand-badge{
-      width:42px; height:42px;
+      width:44px; height:44px;
       border-radius: 14px;
       background: radial-gradient(circle at 30% 30%, var(--brand2), var(--brand));
       display:grid;
@@ -98,7 +118,6 @@
       color: var(--muted);
       margin-top:2px;
     }
-
     .right-tools{
       display:flex;
       align-items:center;
@@ -107,7 +126,6 @@
       justify-content:flex-end;
     }
 
-    /* Cards */
     .box{
       margin-top: 18px;
       border:1px solid var(--border);
@@ -134,27 +152,17 @@
       gap:12px;
       margin-bottom: 12px;
     }
-    h2,h3{
-      margin:0;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
+    h2,h3{ margin:0; font-weight:700; letter-spacing:.2px; }
     h2{ font-size: 18px; }
     h3{ font-size: 16px; }
-
     .subtitle{
       color: var(--muted);
       font-size: 13px;
       margin-top: 6px;
     }
 
-    /* Auth box */
-    .auth-wrap{
-      max-width: 420px;
-      margin: 70px auto;
-    }
+    .auth-wrap{ max-width: 420px; margin: 70px auto; }
 
-    /* Inputs */
     input, select{
       width:100%;
       padding: 13px 14px;
@@ -172,7 +180,6 @@
     }
     input::placeholder{ color: rgba(154,167,191,.8); }
 
-    /* Buttons */
     button{
       padding: 12px 14px;
       border:none;
@@ -202,6 +209,7 @@
       width:auto;
       box-shadow:none;
       font-weight:700;
+      font-size: 12px;
     }
     .edit-btn{ background: linear-gradient(180deg, #22c55e, #16a34a); }
     .delete-btn{ background: linear-gradient(180deg, #ef4444, #dc2626); }
@@ -219,7 +227,6 @@
       font-weight:700;
     }
 
-    /* Role badge */
     .badge{
       padding: 7px 14px;
       border-radius: 999px;
@@ -240,7 +247,6 @@
       color:#bbf7d0;
     }
 
-    /* Stats strip */
     .stats{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
@@ -257,7 +263,6 @@
     .stat .v{ font-size: 20px; font-weight: 800; margin-top: 6px; letter-spacing:.3px; }
     .stat .hint{ margin-top: 6px; font-size: 11px; color: rgba(154,167,191,.85); }
 
-    /* Layout helpers */
     .grid-3{
       display:grid;
       grid-template-columns: 2fr 1fr 1fr;
@@ -269,7 +274,41 @@
       .brand{ min-width: unset; }
     }
 
-    /* Table */
+    .filterbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tab{
+      padding: 9px 12px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: rgba(248,250,252,.92);
+      cursor:pointer;
+      font-weight:700;
+      font-size: 12px;
+      transition:.2s;
+      user-select:none;
+    }
+    .tab:hover{ background: rgba(255,255,255,.09); }
+    .tab.active{
+      background: rgba(225,29,46,.16);
+      border-color: rgba(225,29,46,.35);
+      color: #ffd2d7;
+    }
+    .search{
+      flex: 1;
+      min-width: 220px;
+    }
+
     table{
       width:100%;
       border-collapse: separate;
@@ -304,39 +343,50 @@
       border-bottom-right-radius: 14px;
     }
 
-    .progress-badge{
-      display:inline-flex;
+    .muted{ color: var(--muted); font-size: 12px; font-style: italic; }
+    .danger-text{ color: var(--danger); }
+    .inline{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+    /* Modal */
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display:none;
       align-items:center;
-      gap:8px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
+      justify-content:center;
+      z-index: 50;
+      padding: 18px;
+    }
+    .modal{
+      width: 100%;
+      max-width: 520px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(15,23,42,.98), rgba(15,23,42,.85));
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .modal .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top: 12px;
+    }
+    .row-2{
+      display:grid;
+      grid-template-columns: 1fr 130px;
+      gap:10px;
+      align-items:center;
+      margin-top: 12px;
+    }
+    .percent-preview{
+      text-align:center;
       border:1px solid var(--border);
       background: rgba(255,255,255,.06);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:999px;
-      background: rgba(255,255,255,.5);
-    }
-    .dot.pending{ background: var(--warning); }
-    .dot.done{ background: var(--success); }
-    .dot.progress{ background: #60a5fa; }
-
-    .muted{
-      color: var(--muted);
-      font-size: 12px;
-      font-style: italic;
-    }
-
-    .danger-text{ color: var(--danger); }
-
-    /* Small utility */
-    .inline{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
+      border-radius: 12px;
+      padding: 12px 10px;
+      font-weight: 800;
     }
   </style>
 </head>
@@ -369,13 +419,18 @@
 
       <div class="topbar">
         <div class="brand">
-          <div class="brand-badge" aria-hidden="true">
-            <!-- Simple "T" emblem -->
+          <!-- Optional: isi src logo tel-u kamu (png/svg). Kalau kosong, auto fallback -->
+          <img id="telu-logo" alt="Logo Telkom University"
+               src=""
+               onerror="this.style.display='none'; document.getElementById('fallback-badge').style.display='grid';">
+
+          <div id="fallback-badge" class="brand-badge" style="display:none" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M6 6h12M12 6v12" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
               <path d="M8.5 10h7" stroke="white" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>
             </svg>
           </div>
+
           <div>
             <h1>Telkom University • Dashboard Monitoring</h1>
             <span>Admin & User • To-Do Management System</span>
@@ -396,14 +451,14 @@
           <div class="hint">Semua tugas yang terdata</div>
         </div>
         <div class="stat">
-          <div class="k">On Progress</div>
-          <div class="v" id="stat-progress">0</div>
-          <div class="hint">Sedang dikerjakan</div>
+          <div class="k">Rata-rata Progres</div>
+          <div class="v" id="stat-avg">0%</div>
+          <div class="hint">Dari semua tugas</div>
         </div>
         <div class="stat">
-          <div class="k">Done</div>
+          <div class="k">Tugas Selesai</div>
           <div class="v" id="stat-done">0</div>
-          <div class="hint">Selesai</div>
+          <div class="hint">Progres = 100%</div>
         </div>
       </div>
 
@@ -447,9 +502,18 @@
       <div class="box">
         <div class="title-row">
           <div>
-            <h3 id="table-title">📊 Daftar Progres (Semua User)</h3>
-            <div class="subtitle">Admin bisa edit/hapus semua. User hanya punya akses pada tugas sendiri.</div>
+            <h3 id="table-title">📊 Daftar Progres</h3>
+            <div class="subtitle">Filter & cari tugas lebih cepat. Aksi pakai tombol tulisan.</div>
           </div>
+        </div>
+
+        <div class="filterbar">
+          <div class="tabs">
+            <div class="tab active" id="tab-all" onclick="setView('all')">Semua</div>
+            <div class="tab" id="tab-mine" onclick="setView('mine')">Tugas Saya</div>
+            <div class="tab" id="tab-due" onclick="setView('due')">Deadline Dekat</div>
+          </div>
+          <input class="search" type="text" id="search" placeholder="Cari judul / kategori / pemilik..." oninput="renderTasks()">
         </div>
 
         <table>
@@ -470,12 +534,34 @@
     </div>
   </div>
 
+  <!-- Modal Edit Progress -->
+  <div class="modal-backdrop" id="progressModalBackdrop" onclick="closeProgressModal(event)">
+    <div class="modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <h3>Edit Progres</h3>
+      <div class="subtitle" id="modalTaskInfo">Atur progres 0 sampai 100.</div>
+
+      <div class="row-2">
+        <input type="number" id="progressInput" min="0" max="100" placeholder="0 - 100">
+        <div class="percent-preview"><span id="progressPreview">0</span>%</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost btn-sm" onclick="closeProgressModal()">Batal</button>
+        <button class="btn-sm" onclick="saveProgress()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const AUTH_URL = '/auth';
     const TODO_URL = '/todos';
 
     let isRegisterMode = false;
     let userMap = {};
+
+    let taskCache = [];
+    let viewMode = 'all';
+    let editingTaskId = null;
 
     const token = localStorage.getItem('token');
     if (token) showDashboard();
@@ -488,8 +574,6 @@
       document.getElementById('auth-btn').innerText = isRegisterMode
         ? "Daftar Sekarang"
         : "Masuk Aplikasi";
-
-      // Clear error msg
       document.getElementById('auth-msg').innerText = "";
     }
 
@@ -548,6 +632,9 @@
 
       if (role === 'admin') {
         document.getElementById('admin-panel').classList.remove('hidden');
+        setView('all');
+      } else {
+        setView('mine');
       }
 
       await loadUsers();
@@ -568,9 +655,9 @@
           tbody.innerHTML += `
             <tr>
               <td>${u.id}</td>
-              <td style="font-weight:700;">${u.username}</td>
+              <td style="font-weight:700;">${escapeHtml(u.username)}</td>
               <td>
-                <span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role}</span>
+                <span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${escapeHtml(u.role)}</span>
               </td>
             </tr>`;
           userMap[u.id] = u.username;
@@ -578,65 +665,137 @@
       } catch (e) { /* ignore */ }
     }
 
-    function statusDotClass(status){
-      const s = (status || "").toLowerCase();
-      if (s.includes("done")) return "done";
-      if (s.includes("progress")) return "progress";
-      return "pending";
+    function setView(mode){
+      viewMode = mode;
+      document.getElementById('tab-all').classList.toggle('active', mode === 'all');
+      document.getElementById('tab-mine').classList.toggle('active', mode === 'mine');
+      document.getElementById('tab-due').classList.toggle('active', mode === 'due');
+      renderTasks();
+    }
+
+    function toIDDate(deadlineStr){
+      if(!deadlineStr) return "-";
+      const d = new Date(deadlineStr);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function daysUntil(deadlineStr){
+      if(!deadlineStr) return Infinity;
+      const d = new Date(deadlineStr);
+      if (isNaN(d.getTime())) return Infinity;
+      const now = new Date();
+      const diff = d.setHours(0,0,0,0) - now.setHours(0,0,0,0);
+      return Math.round(diff / (1000*60*60*24));
+    }
+
+    function clampProgress(v){
+      const n = Number(v);
+      if (Number.isNaN(n)) return 0;
+      return Math.max(0, Math.min(100, n));
+    }
+
+    // Ambil progres dari t.progress atau t.status (kalau backend kamu masih pakai status untuk angka)
+    function getTaskProgress(t){
+      // 1) kalau ada field progress numeric
+      if (t && t.progress !== undefined && t.progress !== null && `${t.progress}`.trim() !== "") {
+        return clampProgress(t.progress);
+      }
+
+      // 2) kalau status ternyata angka (mis. "100")
+      const s = (t && t.status != null) ? String(t.status).trim() : "";
+      if (s !== "" && !Number.isNaN(Number(s))) {
+        return clampProgress(s);
+      }
+
+      // 3) kalau status masih teks (Pending/On Progress/Done), mapping cepat
+      const lower = s.toLowerCase();
+      if (lower.includes("done")) return 100;
+      if (lower.includes("progress")) return 50;
+      return 0;
     }
 
     async function loadTasks() {
       const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
-      let myId = localStorage.getItem('user_id');
-
       const res = await fetch(TODO_URL, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const tasks = await res.json();
+      taskCache = Array.isArray(tasks) ? tasks : [];
+
+      // Stats
+      const total = taskCache.length;
+      const progresses = taskCache.map(getTaskProgress);
+      const avg = total ? Math.round(progresses.reduce((a,b)=>a+b,0)/total) : 0;
+      const done = progresses.filter(p => p === 100).length;
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-avg').innerText = `${avg}%`;
+      document.getElementById('stat-done').innerText = done;
+
+      renderTasks();
+    }
+
+    function renderTasks(){
+      const role = localStorage.getItem('role');
+      const myId = localStorage.getItem('user_id');
+      const q = (document.getElementById('search').value || "").toLowerCase().trim();
+
+      let filtered = [...taskCache];
+
+      if(viewMode === 'mine'){
+        filtered = filtered.filter(t => String(t.user_id) === String(myId));
+      } else if(viewMode === 'due'){
+        filtered = filtered.filter(t => daysUntil(t.deadline) <= 7 && daysUntil(t.deadline) >= 0);
+      }
+
+      if(q){
+        filtered = filtered.filter(t => {
+          const owner = (userMap[t.user_id] || `User #${t.user_id}`).toLowerCase();
+          const title = String(t.title || "").toLowerCase();
+          const cat = String(t.category || "").toLowerCase();
+          return owner.includes(q) || title.includes(q) || cat.includes(q);
+        });
+      }
 
       const tbody = document.getElementById('task-list');
       tbody.innerHTML = '';
 
-      // Stats
-      const total = tasks.length;
-      const done = tasks.filter(t => (t.status || "").toLowerCase().includes("done")).length;
-      const onprog = tasks.filter(t => (t.status || "").toLowerCase().includes("progress")).length;
+      if(filtered.length === 0){
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="padding: 18px; border-radius:14px; color: var(--muted);">
+              Tidak ada data yang cocok dengan filter/pencarian.
+            </td>
+          </tr>`;
+        return;
+      }
 
-      document.getElementById('stat-total').innerText = total;
-      document.getElementById('stat-done').innerText = done;
-      document.getElementById('stat-progress').innerText = onprog;
-
-      tasks.forEach(t => {
-        const deadline = t.deadline
-          ? new Date(t.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-          : "-";
+      filtered.forEach(t => {
+        const deadline = toIDDate(t.deadline);
 
         let ownerName = userMap[t.user_id] || `User #${t.user_id}`;
-        if (t.user_id == myId) ownerName += " (Anda)";
+        if (String(t.user_id) === String(myId)) ownerName += " (Anda)";
 
         let actionButtons = '';
-        if (role === 'admin' || t.user_id == myId) {
+        if (role === 'admin' || String(t.user_id) === String(myId)) {
           actionButtons = `
-            <button class="btn-sm edit-btn" onclick="updateProgress(${t.id}, '${t.status || 'Pending'}')">✏️</button>
-            <button class="btn-sm delete-btn" onclick="deleteTask(${t.id})">🗑️</button>
+            <button class="btn-sm edit-btn" onclick="openProgressModal(${t.id})">Edit</button>
+            <button class="btn-sm delete-btn" onclick="deleteTask(${t.id})">Hapus</button>
           `;
         } else {
           actionButtons = `<span class="muted">Hanya Lihat</span>`;
         }
 
+        const p = getTaskProgress(t);
+
         const row = `
           <tr>
-            <td style="color: rgba(255,77,94,.95); font-weight: 800;">${ownerName}</td>
-            <td style="font-weight: 600;">${t.title}</td>
-            <td style="color: rgba(248,250,252,.85);">${t.category || '-'}</td>
-            <td>${deadline}</td>
-            <td>
-              <span class="progress-badge">
-                <span class="dot ${statusDotClass(t.status)}"></span>
-                ${t.status || 'Pending'}
-              </span>
-            </td>
+            <td style="color: rgba(255,77,94,.95); font-weight: 800;">${escapeHtml(ownerName)}</td>
+            <td style="font-weight: 600;">${escapeHtml(t.title || "-")}</td>
+            <td style="color: rgba(248,250,252,.85);">${escapeHtml(t.category || "-")}</td>
+            <td>${escapeHtml(deadline)}</td>
+            <td style="font-weight: 800;">${p}%</td>
             <td class="inline">${actionButtons}</td>
           </tr>
         `;
@@ -664,17 +823,50 @@
       document.getElementById('deadline').value = '';
     }
 
-    async function updateProgress(id, current) {
-      const newVal = prompt("Update status (Pending/Done/On Progress):", current);
-      if (!newVal) return;
-      const token = localStorage.getItem('token');
+    /* ===== Modal edit progress ===== */
+    function openProgressModal(taskId){
+      editingTaskId = taskId;
 
-      await fetch(`${TODO_URL}/${id}`, {
+      const task = taskCache.find(x => String(x.id) === String(taskId));
+      const info = document.getElementById('modalTaskInfo');
+      const input = document.getElementById('progressInput');
+      const preview = document.getElementById('progressPreview');
+
+      const current = task ? getTaskProgress(task) : 0;
+      input.value = current;
+      preview.innerText = current;
+
+      if(task){
+        info.innerText = `Tugas: "${task.title}" • Pemilik: ${userMap[task.user_id] || ('User #' + task.user_id)} • Isi 0-100`;
+      } else {
+        info.innerText = `Atur progres 0 sampai 100.`;
+      }
+
+      input.oninput = () => {
+        preview.innerText = clampProgress(input.value);
+      };
+
+      document.getElementById('progressModalBackdrop').style.display = 'flex';
+    }
+
+    function closeProgressModal(){
+      document.getElementById('progressModalBackdrop').style.display = 'none';
+      editingTaskId = null;
+    }
+
+    async function saveProgress(){
+      if(editingTaskId == null) return;
+
+      const token = localStorage.getItem('token');
+      const p = clampProgress(document.getElementById('progressInput').value);
+
+      await fetch(`${TODO_URL}/${editingTaskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ progress: newVal })
+        body: JSON.stringify({ progress: p })
       });
 
+      closeProgressModal();
       await loadTasks();
     }
 
@@ -688,6 +880,15 @@
       });
 
       await loadTasks();
+    }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
   </script>
 </body>
